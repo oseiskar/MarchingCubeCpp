@@ -79,9 +79,16 @@ namespace MC
 		std::vector<mcVec3f> vertices;
 		std::vector<mcVec3f> normals;
 		std::vector<muint> indices;
+		inline void clear() {
+			vertices.clear();
+			normals.clear();
+			indices.clear();
+		}
 	} mcMesh;
 
-	void marching_cube(MC_FLOAT* field, muint nx, muint ny, muint nz, mcMesh& outputMesh);
+	typedef std::vector<mcVec3i> mcWorkspace;
+
+	void marching_cube(MC_FLOAT* field, muint nx, muint ny, muint nz, mcMesh& outputMesh, mcWorkspace *work = nullptr);
 	void setDefaultArraySizes(muint vertSize, muint normSize, muint triSize);
 }
 
@@ -235,14 +242,18 @@ namespace MC
 	\param nx, ny, nz grid dimension
 	\param outputMesh indexed mesh returned.
 	*/
-	void marching_cube(MC_FLOAT* field, muint nx, muint ny, muint nz, mcMesh& outputMesh)
+	void marching_cube(MC_FLOAT* field, muint nx, muint ny, muint nz, mcMesh& outputMesh, mcWorkspace *workspace)
 	{
 		outputMesh.vertices.reserve(defaultVerticeArraySize);
 		outputMesh.normals.reserve(defaultNormalArraySize);
 		outputMesh.indices.reserve(defaultTriangleArraySize);
 
+		mcWorkspace newWorkspace;
+		if (!workspace)	workspace = &newWorkspace;
+		workspace->resize(nx * ny * 2);
+		mcVec3i* slab_inds = workspace->data();
+
 		const mcVec3i size = { nx, ny, nz };
-		mcVec3i* slab_inds = new mcVec3i[nx * ny * 2];
 		MC_FLOAT vs[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 		muint edge_indices[12];
 		for (muint z = 0; z < nz - 1; z++)
@@ -332,7 +343,6 @@ namespace MC
 		}
 		for (size_t i = 0; i < outputMesh.normals.size(); i++)
 			outputMesh.normals[i] = mc_internalNormalize(outputMesh.normals[i]);
-		delete[] slab_inds;
 	}
 
 #endif
