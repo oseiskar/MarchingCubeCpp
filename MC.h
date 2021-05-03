@@ -18,10 +18,10 @@ namespace MC
 	typedef struct mcVec3f
 	{
 	public:
-		union 
+		union
 		{
 			MC_FLOAT v[3];
-			struct 
+			struct
 			{
 				MC_FLOAT x, y, z;
 			};
@@ -48,24 +48,24 @@ namespace MC
 	static inline mcVec3f mc_internalNormalize(const mcVec3f& v)
 	{
 		MC_FLOAT vv = mc_internalLength(v);
-		return mcVec3f({ v.x / vv, v.y / vv, v.z / vv });
+		return mcVec3f({{{ v.x / vv, v.y / vv, v.z / vv }}});
 	}
 	static inline mcVec3f mc_internalCross(const mcVec3f& v1, const mcVec3f& v2)
 	{
-		return mcVec3f({ v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x });
+		return mcVec3f({{{ v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x }}});
 	}
 	inline mcVec3f operator-(const mcVec3f& l, const mcVec3f r)
 	{
-		return mcVec3f({ l.x - r.x, l.y - r.y, l.z - r.z });
+		return mcVec3f({{{ l.x - r.x, l.y - r.y, l.z - r.z }}});
 	}
 
 	typedef struct mcVec3i
 	{
 	public:
-		union 
+		union
 		{
 			muint v[3];
-			struct 
+			struct
 			{
 				muint x, y, z;
 			};
@@ -113,7 +113,7 @@ namespace MC
 	}
 
 	// Look-up table for triangle configurations
-	static const unsigned long long mc_internalMarching_cube_tris[256] = 
+	static const unsigned long long mc_internalMarching_cube_tris[256] =
 	{
 		0ULL, 33793ULL, 36945ULL, 159668546ULL,
 		18961ULL, 144771090ULL, 5851666ULL, 595283255635ULL,
@@ -194,11 +194,11 @@ namespace MC
 	{
 		if ((va < 0.0) == (vb < 0.0))
 			return;
-		mcVec3f v = { MC_FLOAT(x), MC_FLOAT(y), MC_FLOAT(z) };
+		mcVec3f v = {{{ MC_FLOAT(x), MC_FLOAT(y), MC_FLOAT(z) }}};
 		v[axis] += va / (va - vb);
 		slab_inds[mc_internalToIndex1DSlab(x, y, z, size)][axis] = muint(mesh.vertices.size());
 		mesh.vertices.push_back(v);
-		mesh.normals.push_back(mcVec3f({ 0, 0, 0 }));
+		mesh.normals.push_back(mcVec3f({{{ 0, 0, 0 }}}));
 	}
 
 	/*!
@@ -253,7 +253,7 @@ namespace MC
 		workspace->resize(nx * ny * 2);
 		mcVec3i* slab_inds = workspace->data();
 
-		const mcVec3i size = { nx, ny, nz };
+		const mcVec3i size = {{{ nx, ny, nz }}};
 		MC_FLOAT vs[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 		muint edge_indices[12];
 		for (muint z = 0; z < nz - 1; z++)
